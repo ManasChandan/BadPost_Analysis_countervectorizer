@@ -75,3 +75,35 @@ nb_cv.fit(X_train_cv , y_train_cv)
 nb_cv_accuracy = accuracy_check(nb_cv , X_test_cv , y_test_cv)
 print(nb_cv_accuracy)
 
+def optimization_cv(X_train_cv , X_test_cv , y_train_cv , y_test_cv):
+  best_accuracy = 0.0
+  alpha_val = 0.0
+  for i in np.arange(0.1,1.1,0.1):
+    temp_classifier = MultinomialNB(alpha=i)
+    temp_classifier.fit(X_train_cv, y_train_cv)
+    temp_y_pred = temp_classifier.predict(X_test_cv)
+    score = accuracy_score(y_test_cv, temp_y_pred)
+    print("Accuracy score for alpha={} is: {}%".format(round(i,1), round(score*100,2)))
+    if score>best_accuracy:
+      best_accuracy = score
+      alpha_val = i
+  print('The best accuracy is {}% with alpha value as {}'.format(round(best_accuracy*100, 2), round(alpha_val,1)))
+  return alpha_val
+
+optimal_value_cv = optimization_cv(X_train_cv , X_test_cv , y_train_cv , y_test_cv)
+
+final_model = MultinomialNB(alpha = optimal_value_cv)
+final_model.fit(X_cv , Y_cv)
+
+test_data.head()
+
+corpus_test = prepare_corpus(test_data)
+vectors = cv.transform(corpus_test).toarray()
+
+answer = ml_model_final.predict(vectors)
+print(answer)
+
+answer.shape
+
+ones = [ans for ans in answer if ans==1]
+len(ones)
